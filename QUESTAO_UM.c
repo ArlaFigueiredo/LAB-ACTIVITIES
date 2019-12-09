@@ -40,7 +40,7 @@ int main(){
     mesInicial= ConverteMes(data_inicial, iCont);
     anoInicial= ConverteAno(data_inicial, iCont);
     
-    strcpy(data_final, "05/07/2018");
+    strcpy(data_final, "05/08/2018");
     diaFinal= ConverteDia(data_final, iCont);
     mesFinal= ConverteMes(data_final, iCont);
     anoFinal= ConverteAno(data_final, iCont);
