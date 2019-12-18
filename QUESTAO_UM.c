@@ -23,7 +23,7 @@ int ContaAnoBissexto(int anoI, int anoF);
 
 int main(){
     
-    opcao_validacao_data();
+    //opcao_validacao_data();
     
     char data_inicial[TAM];
     char data_final[TAM];
@@ -35,12 +35,12 @@ int main(){
     int anoFinal;
     int iCont[1];
     
-    strcpy(data_inicial, "06/06/2017");
+    strcpy(data_inicial, "29/02/2016");
     diaInicial= ConverteDia(data_inicial, iCont);
     mesInicial= ConverteMes(data_inicial, iCont);
     anoInicial= ConverteAno(data_inicial, iCont);
     
-    strcpy(data_final, "05/08/2018");
+    strcpy(data_final, "28/02/2017");
     diaFinal= ConverteDia(data_final, iCont);
     mesFinal= ConverteMes(data_final, iCont);
     anoFinal= ConverteAno(data_final, iCont);
@@ -189,21 +189,28 @@ void CalculaDiferencaEntreDatas(int diaI, int mesI, int anoI, int diaF, int mesF
     int DiasDataFinal=0;
     int Diferenca=0;
     int quantidade_bi;
+    int anos, meses, dias;
    
     DiasDataInicial= ContaDiasDaData(diaI, mesI, anoI);
     DiasDataFinal= ContaDiasDaData(diaF, mesF, anoF);
     quantidade_bi= ContaAnoBissexto(anoI, anoF);
+    int bisextoinicial= verifica_ano_bisexto(anoI);
+    int bisextofinal = verifica_ano_bisexto(anoF);
     
-    Diferenca= (DiasDataFinal - DiasDataInicial) + quantidade_bi;
+    Diferenca= (DiasDataFinal - DiasDataInicial) ;//+ quantidade_bi;
     
-    printf("ANOS: %d\n", Diferenca/365);
+    printf("ANOS: %d\n", anos= (Diferenca/365));
     if((mesI != 4 && mesI != 6 && mesI != 9 && mesI != 11 && mesF != 2) && ((Diferenca%365)/30) == 1) {
-        printf("MESES: 0\n");
-        printf("DIAS: %d\n", (Diferenca%365));
+        printf("MESES: %d\n", meses=0);
+        printf("DIAS: %d\n", dias=(Diferenca%365));
+    }
+    else if(bisextofinal== ANOBISSEXTO){
+        printf("MESES: %d\n", meses =(Diferenca%365)/30);
+        printf("DIAS: %d\n", dias=(Diferenca%365)%30-1);
     }
     else{
-        printf("MESES: %d\n", (Diferenca%365)/30);
-        printf("DIAS: %d\n", (Diferenca%365)%30);
+        printf("MESES: %d\n", meses =(Diferenca%365)/30);
+        printf("DIAS: %d\n", dias=(Diferenca%365)%30);
     }
     
 }
