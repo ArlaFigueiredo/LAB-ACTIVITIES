@@ -1,5 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <curses.h>
+
 #define TAM 10
 
 
@@ -10,9 +12,8 @@
 void dobrar(int *x){
 
     *x = *x * 2;
-
-
 }
+
 /*
 Objetivo: criar estrutura auxiliar na posição 'posicao'.
 com tamanho 'tamanho'
@@ -29,27 +30,30 @@ int criarEstruturaAuxiliar(int tamanho, int posicao){
 
   if(posicao <= 0 || posicao >= 11){
     retorno = POSICAO_INVALIDA;
-  }else if(vetorPrincipal[posicao - 1].PonteiroEstruturaSecundaria != NULL){
+  }
+  else if(vetorPrincipal[posicao - 1].PonteiroEstruturaSecundaria != NULL){
     retorno = JA_TEM_ESTRUTURA_AUXILIAR;
-  }else if(tamanho < 1){
+  }
+  else if(tamanho < 1){
     retorno = TAMANHO_INVALIDO;
-  }else{
+  }
+  else{
      vetorPrincipal[posicao - 1].PonteiroEstruturaSecundaria = (int *)malloc (tamanho * sizeof (int));
 
      if(vetorPrincipal[posicao - 1].PonteiroEstruturaSecundaria == NULL){
        retorno = SEM_ESPACO_DE_MEMORIA;
-     }else{
+     }
+     else{
        vetorPrincipal[posicao - 1].MaxElementos = tamanho;
        retorno = SUCESSO;
      }
   }
-
     return retorno;
 }
 
 /*
 Objetivo: inserir número 'valor' em estrutura auxiliar da posição 'posicao'
-Rertono (int)
+Retorno (int)
     SUCESSO - inserido com sucesso
     SEM_ESPACO - não tem espaço
     SEM_ESTRUTURA_AUXILIAR - Não tem estrutura auxiliar
@@ -59,31 +63,26 @@ CONSTANTES
 int inserirNumeroEmEstrutura(int valor, int posicao){
 
     int retorno = 0;
-    int ExisteEstruturaAuxiliar = existeEstruturaAuxiliar(posicao);
-    int temEspaco = 0;
+    int ExisteEstAux = existeEstruturaAuxiliar(posicao);
     int posicaoValida = ehPosicaoValida(posicao);
 
     if (!posicaoValida)
         retorno = POSICAO_INVALIDA;
     else{
-        if (ExisteEstruturaAuxiliar){
+        if (ExisteEstAux){
           if(vetorPrincipal[posicao - 1].QuantidadeElementos < vetorPrincipal[posicao - 1].MaxElementos ){
-            temEspaco = 1;
-          }
-          if (temEspaco){
               vetorPrincipal[posicao - 1].PonteiroEstruturaSecundaria[vetorPrincipal[posicao - 1].QuantidadeElementos] = valor;
               vetorPrincipal[posicao - 1].QuantidadeElementos ++;
               retorno = SUCESSO;
-          }else{
+          }
+          else{
               retorno = SEM_ESPACO;
           }
         }else{
           retorno = SEM_ESTRUTURA_AUXILIAR; // CHAMAR A FUNCAO DE CRIAR A ESTRUTURA AUXILIAR E DPS INSERIR
         }
     }
-
     return retorno;
-
 }
 
 /*
@@ -117,7 +116,6 @@ int excluirNumeroDoFinaldaEstrutura(int posicao){
           retorno = SEM_ESTRUTURA_AUXILIAR;
         }
   }
-
   return retorno;
 }
 
@@ -153,7 +151,7 @@ int excluirNumeroEspecificoDeEstrutura(int valor, int posicao){
               retorno = NUMERO_INEXISTENTE;
             }
             else{
-              for (int i = 0; i < vetorPrincipal[posicao - 1].QuantidadeElementos; i++){
+              for (int i = posicaoNumero; i < vetorPrincipal[posicao - 1].QuantidadeElementos; i++){
                   vetorPrincipal[posicao - 1].PonteiroEstruturaSecundaria[i]= vetorPrincipal[posicao - 1].PonteiroEstruturaSecundaria[i+1];
               }
               vetorPrincipal[posicao - 1].QuantidadeElementos--;
@@ -180,11 +178,24 @@ Retorno (int)
 */
 int getDadosEstruturaAuxiliar(int posicao, int vetorAux[]){
 
-    int retorno = 0;
+  int retorno = 0;
+  int ExisteEstruturaAuxiliar = existeEstruturaAuxiliar(posicao);
+  int posicaoValida = ehPosicaoValida(posicao);
 
-
+  if (!posicaoValida)
+    retorno = POSICAO_INVALIDA;
+  else{
+    if (ExisteEstruturaAuxiliar){
+      for(int i = 0; i < vetorPrincipal[posicao - 1].QuantidadeElementos; i++ ){
+        vetorAux[i] = vetorPrincipal[posicao - 1].PonteiroEstruturaSecundaria[i];
+        retorno = SUCESSO;
+      }
+    }
+    else{
+      retorno = SEM_ESTRUTURA_AUXILIAR;
+    }
+  }
     return retorno;
-
 }
 
 
@@ -200,9 +211,24 @@ int getDadosOrdenadosEstruturaAuxiliar(int posicao, int vetorAux[]){
 
     int retorno = 0;
 
+    int ExisteEstruturaAuxiliar = existeEstruturaAuxiliar(posicao);
+    int posicaoValida = ehPosicaoValida(posicao);
 
+    if (!posicaoValida)
+      retorno = POSICAO_INVALIDA;
+    else{
+      if (ExisteEstruturaAuxiliar){
+        for(int i = 0; i < vetorPrincipal[posicao - 1].QuantidadeElementos; i++ ){
+          vetorAux[i] = vetorPrincipal[posicao - 1].PonteiroEstruturaSecundaria[i];
+        }
+        Ordenar(vetorAux, vetorPrincipal[posicao - 1].QuantidadeElementos); 
+        retorno = SUCESSO;
+      }
+      else{
+        retorno = SEM_ESTRUTURA_AUXILIAR;
+      }
+    }
     return retorno;
-
 }
 
 /*
@@ -215,9 +241,24 @@ Rertono (int)
 */
 int getDadosDeTodasEstruturasAuxiliares(int vetorAux[]){
 
-    int retorno = 0;
-    return retorno;
+  int retorno = 0;
+  int contadorVazio = 0;
+  int j= 0;
 
+  for(int k = 0; k < TAM; k++){
+    if (existeEstruturaAuxiliar(k+1) && vetorPrincipal[k].QuantidadeElementos != 0){
+      for(int i = 0; i < vetorPrincipal[k].QuantidadeElementos; i++ ){
+        vetorAux[j] = vetorPrincipal[k].PonteiroEstruturaSecundaria[i];
+        j++;
+      }
+    }
+    else{
+      contadorVazio++;
+    }
+  }
+  contadorVazio != 10 ? (retorno = SUCESSO) : (retorno = TODAS_ESTRUTURAS_AUXILIARES_VAZIAS);
+    
+  return retorno;
 }
 
 /*
@@ -230,9 +271,25 @@ Rertono (int)
 */
 int getDadosOrdenadosDeTodasEstruturasAuxiliares(int vetorAux[]){
 
-    int retorno = 0;
-    return retorno;
+  int retorno = 0;
+  int contadorVazio = 0;
+  int j= 0;
 
+  for(int k = 0; k < TAM; k++){
+    if (existeEstruturaAuxiliar(k+1) && vetorPrincipal[k].QuantidadeElementos != 0){
+      for(int i = 0; i < vetorPrincipal[k].QuantidadeElementos; i++ ){
+        vetorAux[j] = vetorPrincipal[k].PonteiroEstruturaSecundaria[i];
+        j++;
+      }
+    }
+    else{
+      contadorVazio++;
+    }
+  }
+    contadorVazio != 10 ? (retorno = SUCESSO) : (retorno = TODAS_ESTRUTURAS_AUXILIARES_VAZIAS);
+    (retorno == SUCESSO) ? Ordenar(vetorAux, j) : 0; 
+
+    return retorno;
 }
 
 /*
@@ -279,7 +336,7 @@ Retorno (No*)
 No* montarListaEncadeadaComCabecote(){
 
   No* inicio = (No*) malloc(sizeof(No));
-	inicio->prox = NULL;
+  inicio->prox = NULL;
 
   int QuantidadeElementosTotais;
   int vetorAux[];
@@ -287,7 +344,7 @@ No* montarListaEncadeadaComCabecote(){
   getDadosDeTodasEstruturasAuxiliares(vetorAux);
 
   for (int i = 0; i < QuantidadeElementosTotais; i++)
-		inserirNoFinal(&inicio, vetorAux[i]);
+    inserirNoFinal(&inicio, vetorAux[i]);
 
   if (QuantidadeElementosTotais == 0)
     return NULL;
@@ -304,11 +361,11 @@ void getDadosListaEncadeadaComCabecote(No* inicio, int vetorAux[]){
   celula* tmp = inicio->prox;
   int i = 0;
 
-	while(tmp != NULL){
-		vetor[i] tmp->conteudo);
-		tmp = tmp->prox;
+  while(tmp != NULL){
+    vetor[i] tmp->conteudo);
+    tmp = tmp->prox;
     i++;
-	}
+  }
 
 }
 */
@@ -332,7 +389,6 @@ int ehPosicaoValida(int posicao){
     if (posicao < 1 || posicao > 10){
         retorno = 0;
     }
-
     return retorno;
 }
 
@@ -347,11 +403,24 @@ int existeEstruturaAuxiliar(int posicao){
 
 int localizar_Numero(int valor, int posicao){
 
-  for(int i = 0; i > vetorPrincipal[posicao - 1].QuantidadeElementos; i++ ){
+  for(int i = 0; i < vetorPrincipal[posicao - 1].QuantidadeElementos; i++ ){
     if(valor == vetorPrincipal[posicao - 1].PonteiroEstruturaSecundaria[i])
       return i;
   }
   return -1;
+}
+
+void Ordenar(int vetorAux[], int tamanho){
+  int i,j,aux;
+  for(i = 0; i < tamanho; i++){
+    for(j = i+1; j < tamanho; j++){
+      if(vetorAux[i] > vetorAux[j]){
+        aux = vetorAux[i];
+        vetorAux[i] = vetorAux[j];
+        vetorAux[j] = aux;
+      }
+    }
+  }
 }
 
 int inserirNoFinal(No **inicio, int val){
@@ -375,21 +444,22 @@ int inserirNoFinal(No **inicio, int val){
 
         atual->prox = novo;
     }
-		return 1;
+    return 1;
 }
 
 void liberarLista(No* inicio){
 
-	No* atual = inicio;
-	No* tmp;
+  No* atual = inicio;
+  No* tmp;
 
-	while(atual != NULL){
-		tmp = atual->prox;
-		free(atual);
-		atual = tmp;
-	}
+  while(atual != NULL){
+    tmp = atual->prox;
+    free(atual);
+    atual = tmp;
+  }
 }
-
+  
+  
 /*
 Objetivo: inicializa o programa. deve ser chamado ao inicio do programa
 */

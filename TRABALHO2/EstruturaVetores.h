@@ -44,6 +44,7 @@ int existeEstruturaAuxiliar(int posicao);
 int localizar_Numero(int valor, int posicao);
 void liberarLista(No* inicio);
 int inserirNoFinal(No **inicio, int val);
+void Ordenar(int vetorAux[], int tamanho);
 
 
 void inicializar();
