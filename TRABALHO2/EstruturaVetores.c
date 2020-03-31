@@ -1,255 +1,75 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <curses.h>
-
-#define TAM 10
-
-
 #include "EstruturaVetores.h"
-
-//EstruturaPrincipal vetorPrincipal[TAM];
 
 void dobrar(int *x){
 
     *x = *x * 2;
 }
 
-/*
-Objetivo: criar estrutura auxiliar na posição 'posicao'.
-com tamanho 'tamanho'
-Rertono (int)
-    SUCESSO - criado com sucesso
-    JA_TEM_ESTRUTURA_AUXILIAR - já tem estrutura na posição
-    POSICAO_INVALIDA - Posição inválida para estrutura auxiliar
-    SEM_ESPACO_DE_MEMORIA - Sem espaço de memória
-    TAMANHO_INVALIDO - o tamanho tem inteiro maior ou igual a 1
-*/
 int criarEstruturaAuxiliar(int tamanho, int posicao){
 
-  int retorno = 0;
+  int retorno = Validacoes(posicao, tamanho, 1);
 
-  if(posicao <= 0 || posicao >= 11){
-    retorno = POSICAO_INVALIDA;
-  }
-  else if(vetorPrincipal[posicao - 1].PonteiroEstruturaSecundaria != NULL){
-    retorno = JA_TEM_ESTRUTURA_AUXILIAR;
-  }
-  else if(tamanho < 1){
-    retorno = TAMANHO_INVALIDO;
-  }
-  else{
-     vetorPrincipal[posicao - 1].PonteiroEstruturaSecundaria = (int *)malloc (tamanho * sizeof (int));
-
-     if(vetorPrincipal[posicao - 1].PonteiroEstruturaSecundaria == NULL){
-       retorno = SEM_ESPACO_DE_MEMORIA;
-     }
-     else{
-       vetorPrincipal[posicao - 1].MaxElementos = tamanho;
-       retorno = SUCESSO;
-     }
-  }
-    return retorno;
+  retorno == SUCESSO ? (retorno = Create(posicao, tamanho)) : (retorno = retorno);
+  
+  return retorno;
 }
 
-/*
-Objetivo: inserir número 'valor' em estrutura auxiliar da posição 'posicao'
-Retorno (int)
-    SUCESSO - inserido com sucesso
-    SEM_ESPACO - não tem espaço
-    SEM_ESTRUTURA_AUXILIAR - Não tem estrutura auxiliar
-    POSICAO_INVALIDA - Posição inválida para estrutura auxiliar
-CONSTANTES
-*/
+
 int inserirNumeroEmEstrutura(int valor, int posicao){
 
-    int retorno = 0;
-    int ExisteEstAux = existeEstruturaAuxiliar(posicao);
-    int posicaoValida = ehPosicaoValida(posicao);
-
-    if (!posicaoValida)
-        retorno = POSICAO_INVALIDA;
-    else{
-        if (ExisteEstAux){
-          if(vetorPrincipal[posicao - 1].QuantidadeElementos < vetorPrincipal[posicao - 1].MaxElementos ){
-              vetorPrincipal[posicao - 1].PonteiroEstruturaSecundaria[vetorPrincipal[posicao - 1].QuantidadeElementos] = valor;
-              vetorPrincipal[posicao - 1].QuantidadeElementos ++;
-              retorno = SUCESSO;
-          }
-          else{
-              retorno = SEM_ESPACO;
-          }
-        }else{
-          retorno = SEM_ESTRUTURA_AUXILIAR; // CHAMAR A FUNCAO DE CRIAR A ESTRUTURA AUXILIAR E DPS INSERIR
-        }
-    }
+    int retorno = Validacoes(posicao, 0, 2);
+    retorno == SUCESSO ? (retorno = Insert(posicao, valor)) : (retorno = retorno);
+    
     return retorno;
 }
 
-/*
-Objetivo: excluir o numero 'valor' da estrutura auxiliar no final da estrutura.
-ex: suponha os valores [3, 8, 7, 9,  ,  ]. Após excluir, a estrutura deve ficar da seguinte forma [3, 8, 7,  ,  ,  ].
-Obs. Esta é uma exclusão lógica
-Rertono (int)
-    SUCESSO - excluido com sucesso
-    ESTRUTURA_AUXILIAR_VAZIA - estrutura vazia
-    SEM_ESTRUTURA_AUXILIAR - Não tem estrutura auxiliar
-    POSICAO_INVALIDA - Posição inválida para estrutura auxiliar
-*/
-int excluirNumeroDoFinaldaEstrutura(int posicao){
-  int retorno = 0;
-  int ExisteEstruturaAuxiliar = existeEstruturaAuxiliar(posicao);
-  int posicaoValida = ehPosicaoValida(posicao);
 
-  if (!posicaoValida)
-    retorno = POSICAO_INVALIDA;
-  else{
-        if (ExisteEstruturaAuxiliar){
-          if(vetorPrincipal[posicao - 1].QuantidadeElementos == 0){
-            retorno = ESTRUTURA_AUXILIAR_VAZIA;
-          }
-          else{
-            vetorPrincipal[posicao - 1].QuantidadeElementos--;
-            retorno = SUCESSO;
-          }
-        }
-        else{
-          retorno = SEM_ESTRUTURA_AUXILIAR;
-        }
-  }
+int excluirNumeroDoFinaldaEstrutura(int posicao){
+  
+  int retorno = Validacoes(posicao, 0, 3);
+  retorno == SUCESSO ? (retorno = Delete(posicao)) : (retorno = retorno);
+
   return retorno;
 }
 
-/*
-Objetivo: excluir o numero 'valor' da estrutura auxiliar da posição 'posicao'.
-Caso seja excluido, os números posteriores devem ser movidos para as posições anteriores
-ex: suponha os valores [3, 8, 7, 9,  ,  ] onde deve ser excluido o valor 8. A estrutura deve ficar da seguinte forma [3, 7, 9,  ,  ,  ]
-Obs. Esta é uma exclusão lógica
-Rertono (int)
-    SUCESSO - excluido com sucesso 'valor' da estrutura na posição 'posicao'
-    ESTRUTURA_AUXILIAR_VAZIA - estrutura vazia
-    SEM_ESTRUTURA_AUXILIAR - Não tem estrutura auxiliar
-    NUMERO_INEXISTENTE - Número não existe
-    POSICAO_INVALIDA - Posição inválida para estrutura auxiliar
-*/
 int excluirNumeroEspecificoDeEstrutura(int valor, int posicao){
 
-  int retorno = 0;
-  int posicaoNumero = localizar_Numero(valor, posicao);
-  int ExisteEstruturaAuxiliar = existeEstruturaAuxiliar(posicao);
-  int posicaoValida = ehPosicaoValida(posicao);
-
-
-  if (!posicaoValida)
-    retorno = POSICAO_INVALIDA;
-  else{
-        if (ExisteEstruturaAuxiliar){
-          if(vetorPrincipal[posicao - 1].QuantidadeElementos == 0){
-            retorno = ESTRUTURA_AUXILIAR_VAZIA;
-          }
-          else{
-            if(posicaoNumero == -1){
-              retorno = NUMERO_INEXISTENTE;
-            }
-            else{
-              for (int i = posicaoNumero; i < vetorPrincipal[posicao - 1].QuantidadeElementos; i++){
-                  vetorPrincipal[posicao - 1].PonteiroEstruturaSecundaria[i]= vetorPrincipal[posicao - 1].PonteiroEstruturaSecundaria[i+1];
-              }
-              vetorPrincipal[posicao - 1].QuantidadeElementos--;
-              retorno = SUCESSO;
-            }
-          }
-        }
-        else{
-          retorno = SEM_ESTRUTURA_AUXILIAR;
-        }
-
-        return retorno;
-  }
+  int retorno = Validacoes(posicao, 0, 3);
+  retorno == SUCESSO ? (retorno = DeleteInPosition(posicao, valor)) : (retorno = retorno);
 
   return retorno;
 }
-/*
-Objetivo: retorna os números da estrutura auxiliar da posição 'posicao (1..10)'.
-os números devem ser armazenados em vetorAux
-Retorno (int)
-    SUCESSO - recuperado com sucesso os valores da estrutura na posição 'posicao'
-    SEM_ESTRUTURA_AUXILIAR - Não tem estrutura auxiliar
-    POSICAO_INVALIDA - Posição inválida para estrutura auxiliar
-*/
+
 int getDadosEstruturaAuxiliar(int posicao, int vetorAux[]){
 
-  int retorno = 0;
-  int ExisteEstruturaAuxiliar = existeEstruturaAuxiliar(posicao);
-  int posicaoValida = ehPosicaoValida(posicao);
-
-  if (!posicaoValida)
-    retorno = POSICAO_INVALIDA;
-  else{
-    if (ExisteEstruturaAuxiliar){
-      for(int i = 0; i < vetorPrincipal[posicao - 1].QuantidadeElementos; i++ ){
-        vetorAux[i] = vetorPrincipal[posicao - 1].PonteiroEstruturaSecundaria[i];
-        retorno = SUCESSO;
-      }
-    }
-    else{
-      retorno = SEM_ESTRUTURA_AUXILIAR;
-    }
-  }
-    return retorno;
+  int retorno = Validacoes(posicao, 0, 4);
+  retorno == SUCESSO ? (retorno = InsertVetor(posicao, vetorAux)) : (retorno = retorno);
+  
+  return retorno;
 }
 
-
-/*
-Objetivo: retorna os números ordenados da estrutura auxiliar da posição 'posicao (1..10)'.
-os números devem ser armazenados em vetorAux
-Rertono (int)
-    SUCESSO - recuperado com sucesso os valores da estrutura na posição 'posicao (1..10)'
-    SEM_ESTRUTURA_AUXILIAR - Não tem estrutura auxiliar
-    POSICAO_INVALIDA - Posição inválida para estrutura auxiliar
-*/
 int getDadosOrdenadosEstruturaAuxiliar(int posicao, int vetorAux[]){
 
-    int retorno = 0;
-
-    int ExisteEstruturaAuxiliar = existeEstruturaAuxiliar(posicao);
-    int posicaoValida = ehPosicaoValida(posicao);
-
-    if (!posicaoValida)
-      retorno = POSICAO_INVALIDA;
-    else{
-      if (ExisteEstruturaAuxiliar){
-        for(int i = 0; i < vetorPrincipal[posicao - 1].QuantidadeElementos; i++ ){
-          vetorAux[i] = vetorPrincipal[posicao - 1].PonteiroEstruturaSecundaria[i];
-        }
-        Ordenar(vetorAux, vetorPrincipal[posicao - 1].QuantidadeElementos); 
-        retorno = SUCESSO;
-      }
-      else{
-        retorno = SEM_ESTRUTURA_AUXILIAR;
-      }
-    }
-    return retorno;
+  int retorno = Validacoes(posicao, 0, 4);
+  retorno == SUCESSO ? (retorno = InsertVetorOrdenado(posicao, vetorAux)) : (retorno = retorno);
+  
+  return retorno;
 }
 
-/*
-Objetivo: retorna os números de todas as estruturas auxiliares.
-os números devem ser armazenados em vetorAux
-Rertono (int)
-    SUCESSO - recuperado com sucesso os valores da estrutura na posição 'posicao'
-    SEM_ESTRUTURA_AUXILIAR - Não tem estrutura auxiliar
-    POSICAO_INVALIDA - Posição inválida para estrutura auxiliar
-*/
 int getDadosDeTodasEstruturasAuxiliares(int vetorAux[]){
 
   int retorno = 0;
   int contadorVazio = 0;
-  int j= 0;
+  int jCont= 0;
 
-  for(int k = 0; k < TAM; k++){
-    if (existeEstruturaAuxiliar(k+1) && vetorPrincipal[k].QuantidadeElementos != 0){
-      for(int i = 0; i < vetorPrincipal[k].QuantidadeElementos; i++ ){
-        vetorAux[j] = vetorPrincipal[k].PonteiroEstruturaSecundaria[i];
-        j++;
+  for(int kCont = 0; kCont < TAM; kCont++){
+    if (ExisteEstruturaAuxiliar(kCont+1) && vetorPrincipal[kCont].QuantidadeElementos != 0){
+      for(int iCont = 0; iCont < vetorPrincipal[kCont].QuantidadeElementos; iCont++ ){
+        vetorAux[jCont] = vetorPrincipal[kCont].PonteiroEstruturaSecundaria[iCont];
+        jCont++;
       }
     }
     else{
@@ -261,25 +81,17 @@ int getDadosDeTodasEstruturasAuxiliares(int vetorAux[]){
   return retorno;
 }
 
-/*
-Objetivo: retorna os números ordenados de todas as estruturas auxiliares.
-os números devem ser armazenados em vetorAux
-Rertono (int)
-    SUCESSO - recuperado com sucesso os valores da estrutura na posição 'posicao'
-    SEM_ESTRUTURA_AUXILIAR - Não tem estrutura auxiliar
-    POSICAO_INVALIDA - Posição inválida para estrutura auxiliar
-*/
 int getDadosOrdenadosDeTodasEstruturasAuxiliares(int vetorAux[]){
 
   int retorno = 0;
   int contadorVazio = 0;
-  int j= 0;
+  int jCont= 0;
 
   for(int k = 0; k < TAM; k++){
     if (existeEstruturaAuxiliar(k+1) && vetorPrincipal[k].QuantidadeElementos != 0){
       for(int i = 0; i < vetorPrincipal[k].QuantidadeElementos; i++ ){
-        vetorAux[j] = vetorPrincipal[k].PonteiroEstruturaSecundaria[i];
-        j++;
+        vetorAux[jCont] = vetorPrincipal[k].PonteiroEstruturaSecundaria[i];
+        jCont++;
       }
     }
     else{
@@ -287,7 +99,8 @@ int getDadosOrdenadosDeTodasEstruturasAuxiliares(int vetorAux[]){
     }
   }
     contadorVazio != 10 ? (retorno = SUCESSO) : (retorno = TODAS_ESTRUTURAS_AUXILIARES_VAZIAS);
-    (retorno == SUCESSO) ? Ordenar(vetorAux, j) : 0; 
+    
+    if(retorno == SUCESSO){Ordenar(vetorAux, jCont)}; 
 
     return retorno;
 }
@@ -384,21 +197,45 @@ void destruirListaEncadeadaComCabecote(No* inicio){
 // ####################################################################################################
 //   FUNÇÕES AUXILIARES
 
-int ehPosicaoValida(int posicao){
-    int retorno = 1;
-    if (posicao < 1 || posicao > 10){
-        retorno = 0;
-    }
-    return retorno;
+int ValidacaoPosicao(int posicao){
+    
+  int retorno;
+  (posicao < 1 || posicao > 10) ? (retorno = 0) : (retorno = 1);
+    
+  return retorno;
 }
 
-int existeEstruturaAuxiliar(int posicao){
-    int retorno = 0;
-    if (vetorPrincipal[posicao - 1].PonteiroEstruturaSecundaria != NULL){
-        retorno = 1;
-    }
+int ExisteEstruturaAuxiliar(int posicao){
+    
+  int retorno = 0;
+  (vetorPrincipal[posicao - 1].PonteiroEstruturaSecundaria != NULL) ? (retorno = 1) : (retorno = 0);
 
-    return retorno;
+  return retorno;
+}
+
+int ValidacaoCheio(int posicao){
+    
+  int retorno = 0;
+  (vetorPrincipal[posicao - 1].QuantidadeElementos == vetorPrincipal[posicao - 1].MaxElementos) ? (retorno = 1) : (retorno = 0);
+
+  return retorno;
+}
+
+int ValidacaoVazio(int posicao){
+    
+  int retorno = 0;
+  (vetorPrincipal[posicao - 1].QuantidadeElementos == 0) ? (retorno = 1) : (retorno = 0);
+
+  return retorno;
+}
+
+int ValidacaoTamanho(int tamanho){
+  
+  int retorno;
+  (tamanho < 1) ? (retorno = 0) : (retorno = 1);
+  
+  return retorno;
+
 }
 
 int localizar_Numero(int valor, int posicao){
@@ -422,6 +259,8 @@ void Ordenar(int vetorAux[], int tamanho){
     }
   }
 }
+
+// ####################################################################################################
 
 int inserirNoFinal(No **inicio, int val){
     No *novo;
@@ -482,4 +321,128 @@ para poder liberar todos os espaços de memória das estruturas auxiliares.
 void finalizar(){
 
 
+}
+
+//#################################################################
+//                          METODOS PRIVADOS
+//#################################################################
+
+int Validacoes(int parametroUm, int parametroDois, int operacao){
+  
+  switch(operacao){
+    case 1:{     // CRIACAO
+      if(!ValidacaoPosicao(parametroUm)){
+        return POSICAO_INVALIDA;
+      }
+      else if(ExisteEstruturaAuxiliar(parametroUm)){
+        return JA_TEM_ESTRUTURA_AUXILIAR;
+      }
+      else if(!ValidacaoTamanho(parametroDois)){
+        return TAMANHO_INVALIDO;
+      }
+      else
+        return SUCESSO;
+    }
+    case 2:{     //INSERCAO
+      if(!ValidacaoPosicao(parametroUm)){
+        return POSICAO_INVALIDA;
+      }
+      else if(!ExisteEstruturaAuxiliar(parametroUm)){
+        return SEM_ESTRUTURA_AUXILIAR;
+      }
+      else if(ValidacaoCheio(parametroUm)){
+        return SEM_ESPACO;
+      }
+      else
+        return SUCESSO;
+    }
+    case 3:{     //EXCLUSAO
+      if(!ValidacaoPosicao(parametroUm)){
+        return POSICAO_INVALIDA;
+      }
+      else if(!ExisteEstruturaAuxiliar(parametroUm)){
+        return SEM_ESTRUTURA_AUXILIAR;
+      }
+      else if(ValidacaoVazio(parametroUm)){
+        return ESTRUTURA_AUXILIAR_VAZIA;
+      }
+      else
+        return SUCESSO;
+    }
+     case 4:{     //LISTAGEM
+      if(!ValidacaoPosicao(parametroUm)){
+        return POSICAO_INVALIDA;
+      }
+      else if(!ExisteEstruturaAuxiliar(parametroUm)){
+        return SEM_ESTRUTURA_AUXILIAR;
+      }
+      else
+        return SUCESSO;
+    }
+  }
+  
+  return 0;
+}
+
+int Create(int posicao, int tamanho){
+
+  int retorno = 0;
+
+  vetorPrincipal[posicao - 1].PonteiroEstruturaSecundaria = (int *)malloc (tamanho * sizeof (int));
+  if(vetorPrincipal[posicao - 1].PonteiroEstruturaSecundaria == NULL){
+    retorno = SEM_ESPACO_DE_MEMORIA;
+  }
+  else{
+    vetorPrincipal[posicao - 1].MaxElementos = tamanho;
+    retorno = SUCESSO;
+  }
+  return retorno;
+}
+
+int Insert(int posicao, int valor){
+   
+  vetorPrincipal[posicao - 1].PonteiroEstruturaSecundaria[vetorPrincipal[posicao - 1].QuantidadeElementos] = valor;
+  vetorPrincipal[posicao - 1].QuantidadeElementos ++;
+      
+  return SUCESSO;
+}
+
+int Delete(posicao){
+
+   vetorPrincipal[posicao - 1].QuantidadeElementos--;
+
+   return SUCESSO;
+}
+
+int DeleteInPosition(int posicao, int valor){
+
+  int posicaoNumero = localizar_Numero(int valor, int posicao);
+
+  if(posicaoNumero == -1)
+    return NUMERO_INEXISTENTE;
+  
+  for(int i = localizar_Numero(int valor, int posicao); i < vetorPrincipal[posicao - 1].QuantidadeElementos; i++){
+    vetorPrincipal[posicao - 1].PonteiroEstruturaSecundaria[i]= vetorPrincipal[posicao - 1].PonteiroEstruturaSecundaria[i+1];
+  }
+  vetorPrincipal[posicao - 1].QuantidadeElementos--;
+  
+  return SUCESSO;
+}
+
+int InsertVetor(int posicao, int vetorAux[]){
+
+  for(int i = 0; i < vetorPrincipal[posicao - 1].QuantidadeElementos; i++ )
+    vetorAux[i] = vetorPrincipal[posicao - 1].PonteiroEstruturaSecundaria[i];
+    
+    return SUCESSO;
+}
+
+int InsertVetorOrdenado(int posicao, int vetorAux[]){
+
+  for(int i = 0; i < vetorPrincipal[posicao - 1].QuantidadeElementos; i++ ){
+    vetorAux[i] = vetorPrincipal[posicao - 1].PonteiroEstruturaSecundaria[i];
+  }
+  Ordenar(vetorAux, vetorPrincipal[posicao - 1].QuantidadeElementos); 
+
+  return SUCESSO;
 }

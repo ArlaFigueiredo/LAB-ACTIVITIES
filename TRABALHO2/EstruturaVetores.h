@@ -50,3 +50,10 @@ void Ordenar(int vetorAux[], int tamanho);
 void inicializar();
 void finalizar();
 void dobrar(int *x);
+
+
+int Create(int posicao, int tamanho);
+int Validacoes(int parametroUm, int parametroDois, int operacao);
+
+int ValidacaoPosicao(int posicao);
+int ValidacaoTamanho(int tamanho);
