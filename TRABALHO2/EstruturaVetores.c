@@ -3,10 +3,6 @@
 #include <curses.h>
 #include "EstruturaVetores.h"
 
-void dobrar(int *x){
-
-    *x = *x * 2;
-}
 
 int criarEstruturaAuxiliar(int tamanho, int posicao){
 
@@ -17,7 +13,6 @@ int criarEstruturaAuxiliar(int tamanho, int posicao){
   return retorno;
 }
 
-
 int inserirNumeroEmEstrutura(int valor, int posicao){
 
     int retorno = Validacoes(posicao, 0, 2);
@@ -25,7 +20,6 @@ int inserirNumeroEmEstrutura(int valor, int posicao){
     
     return retorno;
 }
-
 
 int excluirNumeroDoFinaldaEstrutura(int posicao){
   
@@ -88,7 +82,7 @@ int getDadosOrdenadosDeTodasEstruturasAuxiliares(int vetorAux[]){
   int jCont= 0;
 
   for(int k = 0; k < TAM; k++){
-    if (existeEstruturaAuxiliar(k+1) && vetorPrincipal[k].QuantidadeElementos != 0){
+    if (ExisteEstruturaAuxiliar(k+1) && vetorPrincipal[k].QuantidadeElementos != 0){
       for(int i = 0; i < vetorPrincipal[k].QuantidadeElementos; i++ ){
         vetorAux[jCont] = vetorPrincipal[k].PonteiroEstruturaSecundaria[i];
         jCont++;
@@ -100,43 +94,29 @@ int getDadosOrdenadosDeTodasEstruturasAuxiliares(int vetorAux[]){
   }
     contadorVazio != 10 ? (retorno = SUCESSO) : (retorno = TODAS_ESTRUTURAS_AUXILIARES_VAZIAS);
     
-    if(retorno == SUCESSO){Ordenar(vetorAux, jCont)}; 
+    if(retorno == SUCESSO){Ordenar(vetorAux, jCont);} 
 
     return retorno;
 }
 
-/*
-Objetivo: modificar o tamanho da estrutura auxiliar da posição 'posicao' para o novo tamanho 'novoTamanho' + tamanho atual
-Suponha o tamanho inicial = x, e novo tamanho = n. O tamanho resultante deve ser x + n. Sendo que x + n deve ser sempre >= 1
-Rertono (int)
-    SUCESSO - foi modificado corretamente o tamanho da estrutura auxiliar
-    SEM_ESTRUTURA_AUXILIAR - Não tem estrutura auxiliar
-    POSICAO_INVALIDA - Posição inválida para estrutura auxiliar
-    NOVO_TAMANHO_INVALIDO - novo tamanho não pode ser negativo
-    SEM_ESPACO_DE_MEMORIA - erro na alocação do novo valor
-*/
+
 int modificarTamanhoEstruturaAuxiliar(int posicao, int novoTamanho){
 
-    int retorno = 0;
-    return retorno;
+  int retorno = Validacoes(posicao, novoTamanho, 5);
 
+  retorno == SUCESSO ? (retorno = Realocar(posicao, novoTamanho)) : (retorno = retorno);
+
+  return retorno;  
 }
 
-/*
-Objetivo: retorna a quantidade de elementos preenchidos da estrutura auxiliar da posição 'posicao'.
-Retorno (int)
-    POSICAO_INVALIDA - posição inválida
-    SEM_ESTRUTURA_AUXILIAR - sem estrutura auxiliar
-    ESTRUTURA_AUXILIAR_VAZIA - estrutura auxiliar vazia
-    Um número int > 0 correpondente a quantidade de elementos preenchidos da estrutura
-*/
+
 int getQuantidadeElementosEstruturaAuxiliar(int posicao){
 
-    int retorno = 0;
+    int retorno = Validacoes(posicao, 0, 3);
 
+    retorno == SUCESSO ? (retorno = vetorPrincipal[posicao - 1].QuantidadeElementos) : (retorno = retorno);
 
     return retorno;
-
 }
 
 /*
@@ -145,57 +125,50 @@ Retorno (No*)
     NULL, caso não tenha nenhum número nas listas
     No*, ponteiro para o início da lista com cabeçote
 */
-/*
+
 No* montarListaEncadeadaComCabecote(){
 
   No* inicio = (No*) malloc(sizeof(No));
   inicio->prox = NULL;
 
-  int QuantidadeElementosTotais;
-  int vetorAux[];
+  int QtdTotal = QuantidadeElementosTotais();
+  int vetorAux[QtdTotal];
 
   getDadosDeTodasEstruturasAuxiliares(vetorAux);
 
-  for (int i = 0; i < QuantidadeElementosTotais; i++)
+  for (int i = 0; i < QtdTotal; i++)
     inserirNoFinal(&inicio, vetorAux[i]);
 
-  if (QuantidadeElementosTotais == 0)
+  if (QtdTotal == 0)
     return NULL;
 
+  return inicio;
 }
-*/
 
-/*
-Objetivo: retorna os números da lista enceada com cabeçote armazenando em vetorAux.
-Retorno void
-*/
-/*
 void getDadosListaEncadeadaComCabecote(No* inicio, int vetorAux[]){
-  celula* tmp = inicio->prox;
-  int i = 0;
+  
+  No *atual;
+  atual = inicio->prox;
+  int iCont = 0;
 
-  while(tmp != NULL){
-    vetor[i] tmp->conteudo);
-    tmp = tmp->prox;
-    i++;
+  while(atual != NULL){
+    vetorAux[iCont] = atual->conteudo;
+    atual = atual->prox;
+    iCont++;
   }
 
 }
-*/
-/*
-Objetivo: Destruir a lista encadeada com cabeçote a partir de início.
-Retorno
-    void.
-*/
-void destruirListaEncadeadaComCabecote(No* inicio){
+
+
+void destruirListaEncadeadaComCabecote(No** inicio){
 
 
 }
 
 
-
-// ####################################################################################################
-//   FUNÇÕES AUXILIARES
+// ########################################################################################
+//                                      FUNÇÕES AUXILIARES
+// ########################################################################################
 
 int ValidacaoPosicao(int posicao){
     
@@ -260,7 +233,24 @@ void Ordenar(int vetorAux[], int tamanho){
   }
 }
 
-// ####################################################################################################
+int ValidacaoNovoTamanho(int novoTamanho, int posicao){
+
+  int retorno = 0;
+
+  ((novoTamanho + vetorPrincipal[posicao - 1].MaxElementos) <= 0) ? (retorno = 0) : (retorno = 1);
+
+  return retorno;
+}
+
+int QuantidadeElementosTotais(){
+  int contador= 0;
+
+  for(int kCont = 0; kCont < TAM; kCont++){
+    contador = contador + vetorPrincipal[kCont].QuantidadeElementos;
+  }
+
+  return contador;
+}
 
 int inserirNoFinal(No **inicio, int val){
     No *novo;
@@ -273,19 +263,19 @@ int inserirNoFinal(No **inicio, int val){
     novo->conteudo = val;
     novo->prox = NULL;
 
-    if(*inicio == NULL)
-        *inicio = novo;
+    if((*inicio) == NULL)
+        (*inicio) = novo;
     else{
         atual = *inicio;
 
         while(atual->prox != NULL)
-            atual = atual->prox;
+          atual = atual->prox;
 
         atual->prox = novo;
     }
     return 1;
 }
-
+/*
 void liberarLista(No* inicio){
 
   No* atual = inicio;
@@ -297,11 +287,8 @@ void liberarLista(No* inicio){
     atual = tmp;
   }
 }
+*/ 
   
-  
-/*
-Objetivo: inicializa o programa. deve ser chamado ao inicio do programa
-*/
 
 void inicializar(){
 
@@ -322,6 +309,7 @@ void finalizar(){
 
 
 }
+
 
 //#################################################################
 //                          METODOS PRIVADOS
@@ -369,12 +357,25 @@ int Validacoes(int parametroUm, int parametroDois, int operacao){
       else
         return SUCESSO;
     }
-     case 4:{     //LISTAGEM
+    case 4:{     //LISTAGEM
       if(!ValidacaoPosicao(parametroUm)){
         return POSICAO_INVALIDA;
       }
       else if(!ExisteEstruturaAuxiliar(parametroUm)){
         return SEM_ESTRUTURA_AUXILIAR;
+      }
+      else
+        return SUCESSO;
+    }
+    case 5:{     //MODIFICACAO
+      if(!ValidacaoPosicao(parametroUm)){
+        return POSICAO_INVALIDA;
+      }
+      else if(!ExisteEstruturaAuxiliar(parametroUm)){
+        return SEM_ESTRUTURA_AUXILIAR;
+      }
+      else if(!ValidacaoNovoTamanho(parametroDois, parametroUm)){
+        return NOVO_TAMANHO_INVALIDO;
       }
       else
         return SUCESSO;
@@ -407,7 +408,7 @@ int Insert(int posicao, int valor){
   return SUCESSO;
 }
 
-int Delete(posicao){
+int Delete(int posicao){
 
    vetorPrincipal[posicao - 1].QuantidadeElementos--;
 
@@ -416,12 +417,12 @@ int Delete(posicao){
 
 int DeleteInPosition(int posicao, int valor){
 
-  int posicaoNumero = localizar_Numero(int valor, int posicao);
+  int posicaoNumero = localizar_Numero(valor, posicao);
 
   if(posicaoNumero == -1)
     return NUMERO_INEXISTENTE;
   
-  for(int i = localizar_Numero(int valor, int posicao); i < vetorPrincipal[posicao - 1].QuantidadeElementos; i++){
+  for(int i = localizar_Numero(valor, posicao); i < vetorPrincipal[posicao - 1].QuantidadeElementos; i++){
     vetorPrincipal[posicao - 1].PonteiroEstruturaSecundaria[i]= vetorPrincipal[posicao - 1].PonteiroEstruturaSecundaria[i+1];
   }
   vetorPrincipal[posicao - 1].QuantidadeElementos--;
@@ -445,4 +446,24 @@ int InsertVetorOrdenado(int posicao, int vetorAux[]){
   Ordenar(vetorAux, vetorPrincipal[posicao - 1].QuantidadeElementos); 
 
   return SUCESSO;
+}
+
+int Realocar(int posicao, int novoTamanho){
+
+  int retorno = 0;
+  int old = vetorPrincipal[posicao - 1].MaxElementos;
+  int novo = old + novoTamanho;
+
+  vetorPrincipal[posicao - 1].PonteiroEstruturaSecundaria = (int *)realloc(vetorPrincipal[posicao - 1].PonteiroEstruturaSecundaria, novo*sizeof(int));
+
+  if(vetorPrincipal[posicao - 1].PonteiroEstruturaSecundaria == NULL){
+    retorno = SEM_ESPACO_DE_MEMORIA;
+  }
+  else{
+    vetorPrincipal[posicao - 1].MaxElementos = novo;
+    if (novoTamanho < 0){(vetorPrincipal[posicao - 1].QuantidadeElementos = vetorPrincipal[posicao - 1].QuantidadeElementos + novoTamanho);}
+    retorno = SUCESSO;
+  }
+ 
+  return retorno;
 }

@@ -38,22 +38,32 @@ int modificarTamanhoEstruturaAuxiliar(int posicao, int novoTamanho);
 int getQuantidadeElementosEstruturaAuxiliar(int posicao);
 No* montarListaEncadeadaComCabecote();
 void getDadosListaEncadeadaComCabecote(No* inicio, int vetorAux[]);
-void destruirListaEncadeadaComCabecote(No* inicio);
-int ehPosicaoValida(int posicao);
-int existeEstruturaAuxiliar(int posicao);
+void destruirListaEncadeadaComCabecote(No** inicio);
+
+int ValidacaoPosicao(int posicao);
+int ExisteEstruturaAuxiliar(int posicao);
+int ValidacaoCheio(int posicao);
+int ValidacaoVazio(int posicao);
+int ValidacaoTamanho(int tamanho);
 int localizar_Numero(int valor, int posicao);
+void Ordenar(int vetorAux[], int tamanho);
+int ValidacaoNovoTamanho(int novoTamanho, int posicao);
+int QuantidadeElementosTotais();
+
 void liberarLista(No* inicio);
 int inserirNoFinal(No **inicio, int val);
-void Ordenar(int vetorAux[], int tamanho);
-
-
 void inicializar();
 void finalizar();
-void dobrar(int *x);
-
 
 int Create(int posicao, int tamanho);
 int Validacoes(int parametroUm, int parametroDois, int operacao);
+int Insert(int posicao, int valor);
+int Delete(int posicao);
+int DeleteInPosition(int posicao, int valor);
+int InsertVetor(int posicao, int vetorAux[]);
+int InsertVetorOrdenado(int posicao, int vetorAux[]);
+int Realocar(int posicao, int novoTamanho);
 
-int ValidacaoPosicao(int posicao);
-int ValidacaoTamanho(int tamanho);
+
+
+
